@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    root: process.cwd(),
-  },
   output: "standalone",
+  outputFileTracingExcludes: {
+    "*": ["./storage/**"],
+  },
+  serverExternalPackages: ["sharp", "@aws-sdk/client-s3"],
   images: {
     remotePatterns: [
       { protocol: "http", hostname: "localhost" },

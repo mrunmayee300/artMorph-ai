@@ -1,15 +1,22 @@
-import { LocalStorageProvider } from "@/lib/storage/local";
-import { R2StorageProvider } from "@/lib/storage/r2";
+import "server-only";
+
 import type { StorageProvider, UploadResult } from "@/lib/storage/types";
 
 export type { StorageProvider, UploadResult };
 
-function createStorageProvider(): StorageProvider {
+let storageInstance: StorageProvider | null = null;
+
+export async function getStorage(): Promise<StorageProvider> {
+  if (storageInstance) return storageInstance;
+
   const driver = process.env.STORAGE_DRIVER ?? "local";
   if (driver === "r2") {
-    return new R2StorageProvider();
+    const { R2StorageProvider } = await import("@/lib/storage/r2");
+    storageInstance = new R2StorageProvider();
+  } else {
+    const { LocalStorageProvider } = await import("@/lib/storage/local");
+    storageInstance = new LocalStorageProvider();
   }
-  return new LocalStorageProvider();
-}
 
-export const storage = createStorageProvider();
+  return storageInstance;
+}

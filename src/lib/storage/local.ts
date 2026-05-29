@@ -1,14 +1,14 @@
+import "server-only";
+
 import { mkdir, writeFile, unlink, access } from "fs/promises";
 import path from "path";
-import { env } from "@/lib/env";
 import type { StorageProvider, UploadResult } from "@/lib/storage/types";
 
 export class LocalStorageProvider implements StorageProvider {
   private basePath: string;
 
   constructor() {
-    const localPath =
-      process.env.STORAGE_LOCAL_PATH ?? env.STORAGE_LOCAL_PATH ?? "./storage";
+    const localPath = process.env.STORAGE_LOCAL_PATH ?? "./storage";
     this.basePath = path.resolve(process.cwd(), localPath);
   }
 

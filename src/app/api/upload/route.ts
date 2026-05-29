@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { ALLOWED_MIME_TYPES, MAX_UPLOAD_SIZE } from "@/lib/constants";
 import { db } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
-import { storage } from "@/lib/storage";
+import { getStorage } from "@/lib/storage";
 import { trackEvent } from "@/lib/analytics";
 
 export async function POST(request: Request) {
@@ -53,6 +53,7 @@ export async function POST(request: Request) {
   });
 
   const key = `uploads/${session.user.id}/${generation.id}/original.png`;
+  const storage = await getStorage();
   const uploaded = await storage.upload(processed, key, "image/png");
 
   await db.generation.update({

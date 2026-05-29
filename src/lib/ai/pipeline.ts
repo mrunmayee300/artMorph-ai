@@ -5,7 +5,7 @@ import { generateTransformedImage } from "@/lib/ai/generate";
 import { optimizePrompt } from "@/lib/ai/prompt";
 import { recommendStyles } from "@/lib/ai/styles";
 import { db } from "@/lib/db";
-import { storage } from "@/lib/storage";
+import { getStorage } from "@/lib/storage";
 
 export interface PipelineInput {
   generationId: string;
@@ -91,6 +91,7 @@ export async function runTransformationPipeline(
     );
 
     const resultKey = `generations/${input.userId}/${generationId}/result.png`;
+    const storage = await getStorage();
     const uploaded = await storage.upload(
       generated.buffer,
       resultKey,

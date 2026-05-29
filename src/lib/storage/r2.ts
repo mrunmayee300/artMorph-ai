@@ -1,3 +1,5 @@
+import "server-only";
+
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -5,8 +7,15 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { env } from "@/lib/env";
 import type { StorageProvider, UploadResult } from "@/lib/storage/types";
+
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
 
 export class R2StorageProvider implements StorageProvider {
   private client: S3Client;
@@ -14,22 +23,19 @@ export class R2StorageProvider implements StorageProvider {
   private publicUrl: string;
 
   constructor() {
-    if (
-      !env.R2_ACCOUNT_ID ||
-      !env.R2_ACCESS_KEY_ID ||
-      !env.R2_SECRET_ACCESS_KEY ||
-      !env.R2_BUCKET_NAME
-    ) {
-      throw new Error("R2 storage requires R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, and R2_BUCKET_NAME");
-    }
-    this.bucket = env.R2_BUCKET_NAME;
-    this.publicUrl = env.R2_PUBLIC_URL || `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${this.bucket}`;
+    const accountId = requireEnv("R2_ACCOUNT_ID");
+    const accessKeyId = requireEnv("R2_ACCESS_KEY_ID");
+    const secretAccessKey = requireEnv("R2_SECRET_ACCESS_KEY");
+    this.bucket = requireEnv("R2_BUCKET_NAME");
+    this.publicUrl =
+      process.env.R2_PUBLIC_URL ||
+      `https://${accountId}.r2.cloudflarestorage.com/${this.bucket}`;
     this.client = new S3Client({
       region: "auto",
-      endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
       credentials: {
-        accessKeyId: env.R2_ACCESS_KEY_ID,
-        secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+        accessKeyId,
+        secretAccessKey,
       },
     });
   }

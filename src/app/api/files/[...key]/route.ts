@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
 import { readFile, access } from "fs/promises";
 import path from "path";
-import { env } from "@/lib/env";
-
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ key: string[] }> },
 ) {
-  if (env.STORAGE_DRIVER !== "local") {
+  if ((process.env.STORAGE_DRIVER ?? "local") !== "local") {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
@@ -16,7 +14,7 @@ export async function GET(
   const safeKey = key.replace(/\.\./g, "");
   const filePath = path.resolve(
     process.cwd(),
-    env.STORAGE_LOCAL_PATH,
+    process.env.STORAGE_LOCAL_PATH ?? "./storage",
     safeKey,
   );
 
