@@ -8,13 +8,13 @@ export class LocalStorageProvider implements StorageProvider {
   private basePath: string;
 
   constructor() {
-    const localPath = process.env.STORAGE_LOCAL_PATH ?? "./storage";
-    this.basePath = path.resolve(process.cwd(), localPath);
+    this.basePath = path.join(process.cwd(), "storage");
   }
 
   private resolvePath(key: string): string {
     const safeKey = key.replace(/\.\./g, "").replace(/^\/+/, "");
-    return path.join(this.basePath, safeKey);
+    const segments = safeKey.split("/").filter(Boolean);
+    return path.join(this.basePath, ...segments);
   }
 
   async upload(

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { readFile, access } from "fs/promises";
 import path from "path";
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ key: string[] }> },
@@ -11,12 +12,10 @@ export async function GET(
 
   const { key: keyParts } = await params;
   const key = decodeURIComponent(keyParts.join("/"));
-  const safeKey = key.replace(/\.\./g, "");
-  const filePath = path.resolve(
-    process.cwd(),
-    process.env.STORAGE_LOCAL_PATH ?? "./storage",
-    safeKey,
-  );
+  const safeKey = key.replace(/\.\./g, "").replace(/^\/+/, "");
+  const segments = safeKey.split("/").filter(Boolean);
+
+  const filePath = path.join(process.cwd(), "storage", ...segments);
 
   try {
     await access(filePath);

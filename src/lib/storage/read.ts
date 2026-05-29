@@ -36,9 +36,6 @@ export async function readStoredFile(key: string): Promise<Buffer> {
     return Buffer.from(bytes);
   }
 
-  const basePath = path.resolve(
-    process.cwd(),
-    process.env.STORAGE_LOCAL_PATH ?? "./storage",
-  );
-  return readFile(path.join(basePath, safeKey));
+  const segments = safeKey.split("/").filter(Boolean);
+  return readFile(path.join(process.cwd(), "storage", ...segments));
 }
