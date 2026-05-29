@@ -1,4 +1,4 @@
-import { openai } from "@/lib/openai";
+import { getOpenAI } from "@/lib/openai";
 
 export interface QualityEvaluation {
   quality: number;
@@ -13,7 +13,7 @@ export async function evaluateOutput(
   mimeType: string,
   originalPrompt: string,
 ): Promise<QualityEvaluation> {
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: "gpt-4o",
     messages: [
       {

@@ -1,7 +1,7 @@
 import type { GenerationMode } from "@prisma/client";
 import sharp from "sharp";
 import type { ImageModel } from "openai/resources/images";
-import { openai } from "@/lib/openai";
+import { getOpenAI } from "@/lib/openai";
 
 export interface GeneratedImage {
   buffer: Buffer;
@@ -36,7 +36,7 @@ export async function generateTransformedImage(
   );
 
   try {
-    const edited = await openai.images.edit({
+    const edited = await getOpenAI().images.edit({
       model,
       image: imageFile,
       prompt,
@@ -50,7 +50,7 @@ export async function generateTransformedImage(
     return { buffer, revisedPrompt: edited.data?.[0]?.revised_prompt };
   } catch (editError) {
     const fallbackPrompt = `${prompt}. Preserve the core composition and subject matter of the original ${mimeType} input while elevating visual quality.`;
-    const generated = await openai.images.generate({
+    const generated = await getOpenAI().images.generate({
       model,
       prompt: fallbackPrompt,
       size: "1024x1024",

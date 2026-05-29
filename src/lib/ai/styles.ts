@@ -1,5 +1,5 @@
 import type { ImageCategory, StylePreset } from "@prisma/client";
-import { openai } from "@/lib/openai";
+import { getOpenAI } from "@/lib/openai";
 
 export interface StyleRecommendation {
   style: StylePreset;
@@ -25,7 +25,7 @@ export async function recommendStyles(
   description: string,
   elements: string[],
 ): Promise<StyleRecommendation[]> {
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {

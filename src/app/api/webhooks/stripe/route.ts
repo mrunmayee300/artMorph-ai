@@ -6,7 +6,7 @@ import { env } from "@/lib/env";
 import { db } from "@/lib/db";
 import { PLAN_CREDITS } from "@/lib/constants";
 import { resetMonthlyCredits } from "@/lib/credits";
-import { stripe, planFromPriceId } from "@/lib/stripe";
+import { getStripe, planFromPriceId } from "@/lib/stripe";
 import { logAudit } from "@/lib/audit";
 
 export async function POST(request: Request) {
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       signature,
       env.STRIPE_WEBHOOK_SECRET,

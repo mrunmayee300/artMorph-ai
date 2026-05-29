@@ -1,5 +1,5 @@
 import type { ImageCategory } from "@prisma/client";
-import { openai } from "@/lib/openai";
+import { getOpenAI } from "@/lib/openai";
 
 export interface ImageAnalysisResult {
   category: ImageCategory;
@@ -24,7 +24,7 @@ export async function analyzeImage(
   imageBase64: string,
   mimeType: string,
 ): Promise<ImageAnalysisResult> {
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: "gpt-4o",
     messages: [
       {

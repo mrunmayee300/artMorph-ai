@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { absoluteUrl } from "@/lib/utils";
 import { db } from "@/lib/db";
-import { stripe, STRIPE_PRICE_IDS } from "@/lib/stripe";
+import { getStripe, STRIPE_PRICE_IDS } from "@/lib/stripe";
 
 export async function createCheckoutSessionAction(
   plan: Exclude<PlanTier, "FREE">,
@@ -22,7 +22,7 @@ export async function createCheckoutSessionAction(
 
   let customerId = subscription?.stripeCustomerId;
   if (!customerId) {
-    const customer = await stripe.customers.create({
+    const customer = await getStripe().customers.create({
       email: session.user.email,
       name: session.user.name ?? undefined,
       metadata: { userId },
@@ -40,7 +40,7 @@ export async function createCheckoutSessionAction(
     });
   }
 
-  const checkout = await stripe.checkout.sessions.create({
+  const checkout = await getStripe().checkout.sessions.create({
     customer: customerId,
     mode: "subscription",
     payment_method_types: ["card"],
@@ -65,7 +65,7 @@ export async function createBillingPortalAction(): Promise<void> {
     redirect("/pricing");
   }
 
-  const portal = await stripe.billingPortal.sessions.create({
+  const portal = await getStripe().billingPortal.sessions.create({
     customer: subscription.stripeCustomerId,
     return_url: absoluteUrl("/dashboard/billing"),
   });

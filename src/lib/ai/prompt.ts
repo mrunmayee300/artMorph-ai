@@ -1,6 +1,6 @@
 import type { ImageCategory, StylePreset } from "@prisma/client";
 import { STYLE_LABELS } from "@/lib/constants";
-import { openai } from "@/lib/openai";
+import { getOpenAI } from "@/lib/openai";
 
 export async function optimizePrompt(
   category: ImageCategory,
@@ -9,7 +9,7 @@ export async function optimizePrompt(
   elements: string[],
 ): Promise<string> {
   const styleLabel = STYLE_LABELS[style];
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {
